@@ -11,8 +11,9 @@ import { useState } from "react";
 import "./App.css";
 
 function App() {
-  const [card, setCard] = useState([
-    { id: 1, title: "테스트", content: "테스트" },
+
+  const [cards, setCards] = useState([
+    { id: 1, title: "테스트", content: "테스트",isdone:false },
   ]);
   const [complete, setComplete] = useState([]);
   const [title, setTitle] = useState("");
@@ -28,31 +29,49 @@ function App() {
 
   const clickAddHandler = () => {
     const newCard = {
-      id: card.length + 1,
+      id: cards.length + 1,
       title,
       content,
     };
 
-    setCard([...card, newCard]);
+    setCards([...cards, newCard]);
   };
 
   const onDeleteHandler = (id) => {
-    const newCard = card.filter((card) => card.id !== id);
-    setCard(newCard);
+    const newCard = cards.filter((card) => card.id !== id);
+    setCards(newCard);
   };
 
   const onClickCompleteHandler = (dc) => {
-    //클릭했을 떄 card에 있던 배열이 done 배열로 이동해야함
+    //클릭했을 떄 완료로 바꿔주는 버튼
     const doneCard = {
-      id: complete.length + 1,
+      id: dc.id,
       title: dc.title,
       content: dc.content,
     };
+    console.log(doneCard)
 
     setComplete([...complete, doneCard]);
-    console.log(setComplete)
-    setCard(card.filter((d) => d.id !== dc.id));
-    console.log(setCard)
+    setCards(cards.filter((d) => d.id !== dc.id));
+  };
+
+  const onClickDoneDeleteHandler = (id) => {
+    //삭제버튼
+    const newCard = complete.filter((card) => card.id !== id);
+    setComplete(newCard);
+  };
+
+  const onClickReturnButtonHandler = (item) => {
+    //되돌리기 버튼 
+      const returnCard = {
+        id:item.id,
+        title:item.title,
+        content:item.content,
+        isdone:false,
+      }
+
+      setCards([...cards, returnCard])
+      
   };
 
   return (
@@ -83,7 +102,7 @@ function App() {
         <h3>진행중🔥</h3>
 
         <div className="ing-container">
-          {card.map((value, idx) => (
+          {cards.map((value, idx) => (
             <div key={value.id} className="ongoing-box">
               <h2>{value.title}</h2>
               <span>{value.content}</span>
@@ -96,7 +115,7 @@ function App() {
                 </button>
                 <button
                   className="complete-button"
-                  onClick={() => onClickCompleteHandler(value.id)}
+                  onClick={() => onClickCompleteHandler(value)}
                 >
                   완료
                 </button>
@@ -116,11 +135,16 @@ function App() {
               <div className="ongoing-button-box">
                 <button
                   className="delete-button"
-                  onClick={() => onDeleteHandler(item.id)}
+                  onClick={() => onClickDoneDeleteHandler(item.id)}
                 >
                   삭제하기
                 </button>
-                <button className="complete-button">되돌리기</button>
+                <button
+                  className="complete-button"
+                  onClick={onClickReturnButtonHandler(item)}
+                >
+                  되돌리기
+                </button>
               </div>
             </div>
           ))}
